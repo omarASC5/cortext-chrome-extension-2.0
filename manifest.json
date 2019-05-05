@@ -12,7 +12,6 @@
 	  "default_popup": "popup.html"
 	},
 	"permissions": [
-		"https://pure-brushlands-63188.herokuapp.com/index",
 		"https://fierce-headland-43487.herokuapp.com/index",
 		"activeTab"
 	]
