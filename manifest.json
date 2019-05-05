@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"author": "Omar Cobas",
 	"icons": {
-		"128": "logo_original.png"
+		"128": "cortext_logo_128.png"
 	},
    "browser_action": {
 	  "default_icon": "logo_original.png",
@@ -13,6 +13,7 @@
 	},
 	"permissions": [
 		"https://fierce-headland-43487.herokuapp.com/index",
+		"https://fierce-headland-43487.herokuapp.com/",
 		"activeTab"
 	]
    }

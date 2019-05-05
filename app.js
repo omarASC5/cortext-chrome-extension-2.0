@@ -20,12 +20,12 @@ app.set("views", "views"); // Tells EJS the path to the "views" directory
 app.use(bodyParser.urlencoded({extended: true})); // bodyParser config
 
 const db = knex({
-	    client: 'pg',
-	    connection: {
-	      connectionString : process.env.DATABASE_URL,
-	      ssl: true
-	    }
-	});
+	client: 'pg',
+  	connection: {
+    	connectionString : process.env.DATABASE_URL,
+      	ssl: true
+    }
+});
 
 // Index Route, redirects to display homepage
 app.get("/", (req, res, next) => {
@@ -36,8 +36,8 @@ app.get("/", (req, res, next) => {
 // Renders the index page
 app.get("/index", (req, res, next) => {
 	db.max('id').from("links").then((link) => {
-		db.select('*').from("links").where({id: link[0].max}).then((articleObject) => {
-			return articleObject[0].url;
+		db.select('*').from("links").where({id: link[link.length-1].max}).then((articleObject) => {
+			return articleObject.pop().url;
 		}).then((url) => {
 			res.render("index", {url: url});
 		})
@@ -54,40 +54,70 @@ app.post("/index", (req, res, next) => {
 	//   User-entered URL
 	// SELECT MAX(id) FROM links;
 	// SELECT * FROM links WHERE id = (SELECT MAX(id) FROM links);
-	let url = req.body.url;
-	db('links').insert({url: url})
+	// let url = req.body.url;
+	db('links').insert({url: req.body.url});
+	db('links').orderBy('id','desc').select('url').limit(1).then((table) => {
+		url = table[0].url;
+		console.log(url);
+		extract(url).then((article) => {
+			const articleInHTMLForm = article.content;
+			const articleInTextForm = articleInHTMLForm
+				.replace(/<\/?[^>]+(>|$)/g, " ") //Replaces the Tags and leaves a space.
+				.replace(/  +/g, " ") //Replaces double spaces and leaves a single.
+				.replace(/ \.+/g, "."); //Replaces the space between a word and the period to end a sentence.
 
-	// db.select('*').from("links").where("id")
-	db.max('id').from("links").then((link) => {
-		db.select('*').from("links").where({id: link[0].max}).then((articleObject) => {
-			return articleObject[0].url;
-		}).then((url) => {
-				extract(url).then((article) => {
-				const articleInHTMLForm = article.content;
-				const articleInTextForm = articleInHTMLForm
-					.replace(/<\/?[^>]+(>|$)/g, " ") //Replaces the Tags and leaves a space.
-					.replace(/  +/g, " ") //Replaces double spaces and leaves a single.
-					.replace(/ \.+/g, "."); //Replaces the space between a word and the period to end a sentence.
+			//title, publishedTime, author, source, content, url,
+			//Formatts all of the neccesary inforamtion into one object
+			const articleFormatting = {
+				title: article.title,
+				publishedTime: article.publishedTime,
+				author: article.author,
+				source: article.source,
+				content: articleInTextForm,
+				url: article.url
+			};
 
-				//title, publishedTime, author, source, content, url,
-				//Formatts all of the neccesary inforamtion into one object
-				const articleFormatting = {
-					title: article.title,
-					publishedTime: article.publishedTime,
-					author: article.author,
-					source: article.source,
-					content: articleInTextForm,
-					url: article.url
-				};
-
-			return articleFormatting;
-			}).then((article) => {
-				res.render("new", {article: article, Sentiment: Sentiment, html: html, stringToDom: stringToDom, JSDOM: JSDOM}); //Must be an object
-			}).catch((err) => {
-				console.log(err);
-			})
+		return articleFormatting;
+		}).then((article) => {
+			res.render("new", {article: article, Sentiment: Sentiment, html: html, stringToDom: stringToDom, JSDOM: JSDOM}); //Must be an object
+		}).catch((err) => {
+			console.log(err);
 		})
 	})
+	
+	
+
+	// db.select('*').from("links").where("id")
+	// db.max('id').from("links").then((link) => {
+	// 	db.select('*').from("links").where({id: link[0].max}).then((articleObject) => {
+	// 		return articleObject.pop().url;
+	// 	}).then((url) => {
+	// 			extract(url).then((article) => {
+	// 			const articleInHTMLForm = article.content;
+	// 			const articleInTextForm = articleInHTMLForm
+	// 				.replace(/<\/?[^>]+(>|$)/g, " ") //Replaces the Tags and leaves a space.
+	// 				.replace(/  +/g, " ") //Replaces double spaces and leaves a single.
+	// 				.replace(/ \.+/g, "."); //Replaces the space between a word and the period to end a sentence.
+
+	// 			//title, publishedTime, author, source, content, url,
+	// 			//Formatts all of the neccesary inforamtion into one object
+	// 			const articleFormatting = {
+	// 				title: article.title,
+	// 				publishedTime: article.publishedTime,
+	// 				author: article.author,
+	// 				source: article.source,
+	// 				content: articleInTextForm,
+	// 				url: article.url
+	// 			};
+
+	// 		return articleFormatting;
+	// 		}).then((article) => {
+	// 			res.render("new", {article: article, Sentiment: Sentiment, html: html, stringToDom: stringToDom, JSDOM: JSDOM}); //Must be an object
+	// 		}).catch((err) => {
+	// 			console.log(err);
+	// 		})
+	// 	})
+	// })
 });
 
 // Server Setup/Initialization
