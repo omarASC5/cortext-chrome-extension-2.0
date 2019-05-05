@@ -1,1 +1,1 @@
-# cortext-chrome-extension-2.0
+# cortext-chrome-extension
