@@ -1,5 +1,5 @@
 {
-  "name": "cortext-chrome-extension",
+  "name": "cortext-chrome-extension-2.0",
   "version": "1.0.0",
   "description": "A website that helps detect the bias of news article.",
   "main": "app.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/omarASC5/cortext-chrome-extension.git"
+    "url": "git+https://github.com/omarASC5/cortext-chrome-extension-2.0.git"
   },
   "author": "Omar Cobas",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/omarASC5/cortext-chrome-extension/issues"
+    "url": "https://github.com/omarASC5/cortext-chrome-extension-2.0/issues"
   },
-  "homepage": "https://github.com/omarASC5/cortext-chrome-extension#readme",
+  "homepage": "https://github.com/omarASC5/cortext-chrome-extension-2.0#readme",
   "dependencies": {
     "article-parser": "^2.4.0",
     "body-parser": "^1.18.3",
